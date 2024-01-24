@@ -7,15 +7,18 @@ import { decodeJpeg } from '@tensorflow/tfjs-react-native';
 import * as facemesh from '@tensorflow-models/facemesh';
 import Svg, { Circle, Rect } from 'react-native-svg';
 import * as ExpoImageManipulator from 'expo-image-manipulator';
+import { useNavigation } from '@react-navigation/native';
 
 // precisa melhorar o uso de memória RAM, conforme o app é utilizado o uso de RAM só aumenta
 
-export default function Home() {
+export function Home() {
   const [cartoonImage, setCartoonImage] = useState(null);
   const [secondCartoonImage, setSecondCartoonImage] = useState(null);
   const [listPredictions, setListPredictions] = useState([]);
   const [imageLoading, setImageLoading] = useState(false);
   const [imageLoading2, setImageLoading2] = useState(false);
+
+  const navigation = useNavigation();
 
   const handleChooseImage = async () => {
     
@@ -78,16 +81,17 @@ export default function Home() {
         if(index === 0) {
 
           const keypoints = prediction.scaledMesh;
-          let LIMIT_POINTS = 40;
-          const DIV_252 = 2.6;
+          const LIMIT_POINTS = 40;
+          let count = 40;
+          const DIV_252 = 2.5;
           return (
             <Svg key={`mesh-${index}`} height="100%" width="100%" viewBox="0 0 100 100">
               {keypoints.map((point, pointIndex) => {
                 const x = point[0] / DIV_252;
                 const y = point[1] / DIV_252;
 
-                if(LIMIT_POINTS === 40) {
-                  LIMIT_POINTS = 0;
+                if(count === LIMIT_POINTS) {
+                  count = 0;
                   return (
                     <Circle
                       key={`point-${pointIndex}`}
@@ -99,7 +103,7 @@ export default function Home() {
                   );
                 }
 
-                LIMIT_POINTS++;
+                count++;
     
               })}
             </Svg>
@@ -148,6 +152,22 @@ export default function Home() {
 
       <View style={styles.buttonContainer}>
         <Button title="Escolher Imagem" onPress={handleChooseImage} disabled={imageLoading || imageLoading2} />
+
+        <View style={{paddingTop: 20}}>
+
+          <Button  title="Face detection" onPress={() => {
+            navigation.navigate("faceRegistrationScreen");
+          }}/>
+        </View>
+
+        <View style={{paddingTop: 20}}>
+
+          <Button  title="Face validation" onPress={() => {
+            navigation.navigate("faceValidationScreen");
+          }}/>
+        </View>
+
+
       </View>
     </View>
   );
@@ -186,8 +206,7 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   buttonContainer: {
-    flexDirection: 'row',
     justifyContent: 'space-around',
-    width: '100%',
+    width: 252,
   },
 });
