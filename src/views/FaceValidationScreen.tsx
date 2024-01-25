@@ -85,32 +85,83 @@ export function FaceValidationScreen() {
     setSuccessRegister(2);
   };
 
-  // o registro e a manipulação até aqui está certo, o que eu tenho que fazer é melhorar o compareFaces()
   const compareFaces = (face1, face2) => {
-    // Implemente sua lógica de comparação de rostos aqui
-    // Por exemplo, você pode calcular a distância euclidiana entre os pontos-chave
-    // e definir um limite para considerar se são correspondentes ou não.
-    // Esta é uma simplificação e pode exigir uma lógica mais avançada dependendo do seu caso de uso.
-
+    // Verifique se os dois rostos têm o mesmo número de pontos-chave
+    if (face1.length !== face2.length) {
+      console.error('Número diferente de pontos-chave nos rostos.');
+      return false;
+    }
+  
+    const numPoints = face1.length;
     const distanceThreshold = 20; // Ajuste conforme necessário
-    let count = 0;
-    for (let i = 0; i < face1.length; i++) {
+    let totalDistance = 0;
+  
+    for (let i = 0; i < numPoints; i++) {
       const distance = Math.sqrt(
         Math.pow(face1[i][0] - face2[i][0], 2) + Math.pow(face1[i][1] - face2[i][1], 2)
       );
-
-      // console.log(distance)
-      if(count >= 3) {
-        return false;
-      }
-
-      if (distance > distanceThreshold) {
-        count++;
-      }
+  
+      totalDistance += distance;
     }
-
-    return true; // Rostos correspondem
+  
+    const averageDistance = totalDistance / numPoints;
+  
+    console.log('Distância média:', averageDistance);
+  
+    // return averageDistance <= dynamicThreshold;
+    return averageDistance <= distanceThreshold;
   };
+
+  // const normalizeKeyPoints = (points) => {
+  //   // Encontre os valores máximos e mínimos para os eixos x e y
+  //   const maxX = Math.max(...points.map(point => point[0]));
+  //   const minX = Math.min(...points.map(point => point[0]));
+  //   const maxY = Math.max(...points.map(point => point[1]));
+  //   const minY = Math.min(...points.map(point => point[1]));
+  
+  //   // Calcule as diferenças máximas em ambos os eixos
+  //   const diffX = maxX - minX;
+  //   const diffY = maxY - minY;
+  
+  //   // Normalize os pontos-chave para que todos estejam na faixa [0, 1]
+  //   const normalizedPoints = points.map(point => [
+  //     (point[0] - minX) / diffX,
+  //     (point[1] - minY) / diffY,
+  //   ]);
+  
+  //   return normalizedPoints;
+  // };
+  
+  // const compareFaces = (face1, face2) => {
+  //   if (face1.length !== face2.length) {
+  //     console.error('Número diferente de pontos-chave nos rostos.');
+  //     return false;
+  //   }
+  
+  //   const numPoints = face1.length;
+  //   const distanceThreshold = 0.03; // Ajuste conforme necessário
+  //   let totalDistance = 0;
+  
+  //   // Normalize os pontos-chave antes de calcular as distâncias
+  //   const normalizedFace1 = normalizeKeyPoints(face1);
+  //   const normalizedFace2 = normalizeKeyPoints(face2);
+  
+  //   for (let i = 0; i < numPoints; i++) {
+  //     const distance = Math.sqrt(
+  //       Math.pow(normalizedFace1[i][0] - normalizedFace2[i][0], 2) +
+  //       Math.pow(normalizedFace1[i][1] - normalizedFace2[i][1], 2)
+  //     );
+  
+  //     totalDistance += distance;
+  //   }
+  
+  //   const averageDistance = totalDistance / numPoints;
+  
+  //   console.log('Distância média normalizada:', averageDistance);
+  
+  //   return averageDistance <= distanceThreshold;
+  // };
+  
 
   const drawMesh = () => {
     if (listPredictions.length > 0) {
